@@ -26,6 +26,32 @@ module.exports = async (req, res) => {
   }
 
   try {
+    let conversationContents = [];
+
+    if (userId) {
+      const { data: previousMessages } = await supabase
+        .from("conversations")
+        .select("*")
+        .eq("user_id", userId)
+        .eq("character_id", characterId)
+        .order("created_at", { ascending: true })
+        .limit(20);
+
+      if (previousMessages) {
+        conversationContents = previousMessages.map(function (m) {
+          return {
+            role: m.sender === "user" ? "user" : "model",
+            parts: [{ text: m.message }]
+          };
+        });
+      }
+    }
+
+    conversationContents.push({
+      role: "user",
+      parts: [{ text: message }]
+    });
+
     const geminiRes = await fetch(
       "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=" + process.env.GEMINI_API_KEY,
       {
@@ -35,12 +61,7 @@ module.exports = async (req, res) => {
           system_instruction: {
             parts: [{ text: systemPrompt }]
           },
-          contents: [
-            {
-              role: "user",
-              parts: [{ text: message }]
-            }
-          ],
+          contents: conversationContents,
           generationConfig: {
             maxOutputTokens: 500
           }
