@@ -39,7 +39,6 @@ module.exports = async (req, res) => {
               thinkingBudget: 0
             }
           }
-          }
         })
       }
     );
