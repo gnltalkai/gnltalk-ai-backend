@@ -1,4 +1,10 @@
 const characterPrompts = require("./characters-prompts.js");
+const { createClient } = require("@supabase/supabase-js");
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY
+);
 
 module.exports = async (req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -8,6 +14,7 @@ module.exports = async (req, res) => {
 
   const characterId = req.body ? req.body.characterId : null;
   const message = req.body ? req.body.message : null;
+  const userId = req.body ? req.body.userId : null;
 
   if (!characterId || !message) {
     return res.status(400).json({ error: "characterId ou message manquant" });
@@ -48,6 +55,13 @@ module.exports = async (req, res) => {
     }
 
     const reply = data.candidates[0].content.parts[0].text;
+
+    if (userId) {
+      await supabase.from("conversations").insert([
+        { user_id: userId, character_id: characterId, sender: "user", message: message },
+        { user_id: userId, character_id: characterId, sender: "character", message: reply }
+      ]);
+    }
 
     return res.json({ reply: reply });
 
