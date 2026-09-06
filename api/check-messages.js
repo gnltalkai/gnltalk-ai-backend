@@ -6,7 +6,7 @@ const supabase = createClient(
 );
 
 module.exports = async (req, res) => {
-  const { deviceId } = req.body;
+  const deviceId = req.body ? req.body.deviceId : null;
   if (!deviceId) return res.status(400).json({ error: "deviceId manquant" });
 
   let { data } = await supabase
