@@ -34,7 +34,11 @@ module.exports = async (req, res) => {
             }
           ],
           generationConfig: {
-            maxOutputTokens: 120
+            maxOutputTokens: 300,
+            thinkingConfig: {
+              thinkingBudget: 0
+            }
+          }
           }
         })
       }
