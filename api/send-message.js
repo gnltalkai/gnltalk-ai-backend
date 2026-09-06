@@ -32,7 +32,10 @@ module.exports = async (req, res) => {
               role: "user",
               parts: [{ text: message }]
             }
-          ]
+          ],
+          generationConfig: {
+            maxOutputTokens: 120
+          }
         })
       }
     );
