@@ -46,7 +46,7 @@ module.exports = async (req, res) => {
     const data = await geminiRes.json();
 
     if (!data.candidates || !data.candidates[0]) {
-      return res.json({ reply: "Désolé, je n'ai pas pu répondre pour le moment." });
+      return res.json({ reply: "DEBUG: " + JSON.stringify(data) });
     }
 
     const reply = data.candidates[0].content.parts[0].text;
